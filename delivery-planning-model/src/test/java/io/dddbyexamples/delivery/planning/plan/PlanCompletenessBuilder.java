@@ -10,9 +10,13 @@ import java.util.Map;
 public class PlanCompletenessBuilder implements PlanCompletenessProvider {
 
     private Map<LocalDate, Part> parts = new HashMap<>();
-    private Map<LocalDate, PlanCompleteness> completeness = new HashMap<>();
+    private Map<LocalDate, PlanCompletenessProjection> completeness = new HashMap<>();
 
     public PlanCompleteness get(LocalDate date) {
+        return getProjection(date).get();
+    }
+
+    public PlanCompletenessProjection getProjection(LocalDate date) {
         return completeness.computeIfAbsent(date, key -> {
             Part part = parts.getOrDefault(key, new Part());
             return part.create(key);
@@ -37,8 +41,8 @@ public class PlanCompletenessBuilder implements PlanCompletenessProvider {
         private Amounts demanded = Amounts.empty();
         private Amounts reminder = Amounts.empty();
 
-        private PlanCompleteness create(LocalDate key) {
-            return new PlanCompleteness(
+        private PlanCompletenessProjection create(LocalDate key) {
+            return new PlanCompletenessProjection(
                     key,
                     planned,
                     demanded,

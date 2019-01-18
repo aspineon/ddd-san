@@ -10,6 +10,7 @@ import io.dddbyexamples.delivery.planning.PlanningCompleted;
 import io.dddbyexamples.delivery.planning.delivery.capacity.PayloadCapacityPolicy;
 import io.dddbyexamples.delivery.planning.delivery.capacity.PayloadCapacityPolicyVer1;
 import io.dddbyexamples.delivery.planning.plan.PlanCompleteness;
+import io.dddbyexamples.delivery.planning.plan.PlanCompletenessProjection;
 import io.dddbyexamples.delivery.planning.plan.ProductAmount;
 import org.assertj.core.api.Assertions;
 
@@ -40,7 +41,7 @@ public class DeliveryModificationsSteps {
     // objects under test
     private DeliveryFactory factory = new DeliveryFactory(payloadCapacityPolicy, events);
     private Map<Object, Delivery> deliveries = new HashMap<>();
-    private PlanCompleteness planCompleteness;
+    private PlanCompletenessProjection planCompleteness;
 
     @Given("^(\\d+) pieces of product \"([^\"]*)\" are stored on \"([^\"]*)\"$")
     public void piecesOfProductAreStoredOn(int amount, String refNo, String storageUnitType) throws Throwable {
@@ -50,7 +51,7 @@ public class DeliveryModificationsSteps {
     @Given("^customers demands for tomorrow:$")
     public void customersDemandsForTomorrow(List<ProductAmount> demands) throws Throwable {
         Amounts demandsForDate = ProductAmount.createAmounts(demands);
-        this.planCompleteness = new PlanCompleteness(
+        this.planCompleteness = new PlanCompletenessProjection(
                 date, Amounts.empty(), demandsForDate, Amounts.empty()
         );
     }
@@ -152,7 +153,7 @@ public class DeliveryModificationsSteps {
     }
 
     private boolean isDemandsFulfilled() {
-        return planCompleteness.getDiff()
+        return planCompleteness.get().getDiff()
                 .allMatch((refNo, amount) -> amount >= 0L);
     }
 

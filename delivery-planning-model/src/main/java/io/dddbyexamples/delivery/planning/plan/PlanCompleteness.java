@@ -10,10 +10,9 @@ import java.time.LocalDate;
 
 @AllArgsConstructor
 public class PlanCompleteness {
-    private LocalDate date;
-    private Amounts planned;
-    private Amounts demanded;
-    private Amounts yesterdaysReminder;
+    private final Amounts planned;
+    private final Amounts demanded;
+    private final Amounts yesterdaysReminder;
 
     public Amounts getDiff() {
         return planned.diff(demanded.sum(yesterdaysReminder));
@@ -25,26 +24,5 @@ public class PlanCompleteness {
 
     public boolean anyMissing() {
         return !getDiff().allMatch((productRefNo, amount) -> amount > 0);
-    }
-
-    public void apply(DeliveredAmountsChanged event) {
-        if (!event.getDate().equals(date)) {
-            return;
-        }
-        planned = planned.sum(event.getDiff());
-    }
-
-    public void apply(DemandedLevelsChanged event) {
-        if (!event.getDate().equals(date)) {
-            return;
-        }
-        demanded = demanded.with(event.getRefNo(), event.getCurrent());
-    }
-
-    public void apply(PlanningCompleted event) {
-        if (!event.getDate().equals(date.minusDays(1))) {
-            return;
-        }
-        yesterdaysReminder = yesterdaysReminder.sum(event.getReminder());
     }
 }

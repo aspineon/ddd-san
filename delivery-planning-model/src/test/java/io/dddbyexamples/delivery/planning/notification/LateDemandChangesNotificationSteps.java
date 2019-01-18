@@ -54,7 +54,7 @@ public class LateDemandChangesNotificationSteps {
         lastDemandedChanged = new DemandedLevelsChanged(
                 today, refNo, previous, amount
         );
-        completeness.get(today).apply(lastDemandedChanged);
+        completeness.getProjection(today).apply(lastDemandedChanged);
         subject.apply(lastDemandedChanged);
     }
 
